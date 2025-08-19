@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-Pesa Fee Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #00a651 0%, #004d25 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #00a651;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 40px;
+        }
+        
+        .service-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            padding: 5px;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button.active {
+            background: #00a651;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 166, 81, 0.3);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #00a651;
+            box-shadow: 0 0 0 3px rgba(0, 166, 81, 0.1);
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #00a651, #00d463);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 166, 81, 0.3);
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #00a651;
+            display: none;
+        }
+        
+        .result-card.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #00a651;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .result-value {
+            font-weight: 700;
+            color: #212529;
+            font-size: 1.1rem;
+        }
+        
+        .developer-credit {
+            margin-top: 40px;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            border: 2px solid #00a651;
+        }
+        
+        .credit-content h3 {
+            color: #00a651;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+        
+        .credit-content p {
+            color: #ffffff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .credit-content p:last-child {
+            color: #cccccc;
+            font-style: italic;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .service-tabs {
+                flex-direction: column;
+            }
+            
+            .tab-button {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>M-Pesa Fee Calculator</h1>
+            <p>Calculate accurate fees for money transfers and withdrawals</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="service-tabs">
+                <button class="tab-button active" onclick="switchTab('send')">Send Money</button>
+                <button class="tab-button" onclick="switchTab('withdraw')">Withdraw Money</button>
+            </div>
+            
+            <!-- Send Money Tab -->
+            <div id="send-tab" class="tab-content active">
+                <div class="input-group">
+                    <label for="send-amount">Amount to Send (KSh)</label>
+                    <input type="number" id="send-amount" placeholder="Enter amount" min="1" max="300000">
+                </div>
+                
+                <div class="input-group">
+                    <label for="send-type">Send To</label>
+                    <select id="send-type">
+                        <option value="registered">Registered M-Pesa User</option>
+                        <option value="unregistered">Unregistered User</option>
+                    </select>
+                </div>
+                
+                <button class="calculate-btn" onclick="calculateSendFee()">Calculate Send Fee</button>
+                
+                <div id="send-result" class="result-card">
+                    <div class="result-item">
+                        <span class="result-label">Amount to Send:</span>
+                        <span class="result-value" id="send-amount-display">KSh 0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Transaction Fee:</span>
+                        <span class="result-value" id="send-fee-display">KSh 0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Total Cost:</span>
+                        <span class="result-value" id="send-total-display">KSh 0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Withdraw Money Tab -->
+            <div id="withdraw-tab" class="tab-content">
+                <div class="input-group">
+                    <label for="withdraw-amount">Amount to Withdraw (KSh)</label>
+                    <input type="number" id="withdraw-amount" placeholder="Enter amount" min="50" max="150000">
+                </div>
+                
+                <div class="input-group">
+                    <label for="withdraw-type">Withdraw From</label>
+                    <select id="withdraw-type">
+                        <option value="agent">M-Pesa Agent</option>
+                        <option value="atm">ATM</option>
+                    </select>
+                </div>
+                
+                <button class="calculate-btn" onclick="calculateWithdrawFee()">Calculate Withdrawal Fee</button>
+                
+                <div id="withdraw-result" class="result-card">
+                    <div class="result-item">
+                        <span class="result-label">Withdrawal Amount:</span>
+                        <span class="result-value" id="withdraw-amount-display">KSh 0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Transaction Fee:</span>
+                        <span class="result-value" id="withdraw-fee-display">KSh 0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Amount Received:</span>
+                        <span class="result-value" id="withdraw-net-display">KSh 0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Developer Credit -->
+            <div class="developer-credit">
+                <div class="credit-content">
+                    <h3>💼 Developed by TradeProfX</h3>
+                    <p><strong>C.E.O:</strong> TonnieRich</p>
+                    <p><strong>Contact:</strong> +254745339951</p>
+                    <p>Professional financial solutions and trading systems</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fee structures based on current M-Pesa rates
+        const sendFees = [
+            { min: 1, max: 49, fee: 0 },
+            { min: 50, max: 100, fee: 0 },
+            { min: 101, max: 500, fee: 7 },
+            { min: 501, max: 1000, fee: 13 },
+            { min: 1001, max: 1500, fee: 23 },
+            { min: 1501, max: 2500, fee: 33 },
+            { min: 2501, max: 3500, fee: 53 },
+            { min: 3501, max: 5000, fee: 57 },
+            { min: 5001, max: 7500, fee: 78 },
+            { min: 7501, max: 10000, fee: 90 },
+            { min: 10001, max: 15000, fee: 100 },
+            { min: 15001, max: 20000, fee: 105 },
+            { min: 20001, max: 35000, fee: 108 },
+            { min: 35001, max: 50000, fee: 110 },
+            { min: 50001, max: 300000, fee: 110 }
+        ];
+
+        const withdrawFees = [
+            { min: 50, max: 100, fee: 11 },
+            { min: 101, max: 500, fee: 15 },
+            { min: 501, max: 1000, fee: 25 },
+            { min: 1001, max: 1500, fee: 29 },
+            { min: 1501, max: 2500, fee: 29 },
+            { min: 2501, max: 3500, fee: 52 },
+            { min: 3501, max: 5000, fee: 69 },
+            { min: 5001, max: 7500, fee: 87 },
+            { min: 7501, max: 10000, fee: 115 },
+            { min: 10001, max: 15000, fee: 167 },
+            { min: 15001, max: 20000, fee: 185 },
+            { min: 20001, max: 35000, fee: 197 },
+            { min: 35001, max: 50000, fee: 278 },
+            { min: 50001, max: 150000, fee: 309 }
+        ];
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Hide result cards
+            document.querySelectorAll('.result-card').forEach(card => {
+                card.classList.remove('show');
+            });
+        }
+
+        function getFee(amount, feeStructure) {
+            for (let tier of feeStructure) {
+                if (amount >= tier.min && amount <= tier.max) {
+                    return tier.fee;
+                }
+            }
+            return 0;
+        }
+
+        function calculateSendFee() {
+            const amount = parseFloat(document.getElementById('send-amount').value);
+            const sendType = document.getElementById('send-type').value;
+            
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            if (amount > 300000) {
+                alert('Maximum send amount is KSh 300,000');
+                return;
+            }
+            
+            let fee = getFee(amount, sendFees);
+            
+            // Additional fee for unregistered users
+            if (sendType === 'unregistered') {
+                fee += 5;
+            }
+            
+            const total = amount + fee;
+            
+            // Display results
+            document.getElementById('send-amount-display').textContent = `KSh ${amount.toLocaleString()}`;
+            document.getElementById('send-fee-display').textContent = `KSh ${fee.toLocaleString()}`;
+            document.getElementById('send-total-display').textContent = `KSh ${total.toLocaleString()}`;
+            
+            document.getElementById('send-result').classList.add('show');
+        }
+
+        function calculateWithdrawFee() {
+            const amount = parseFloat(document.getElementById('withdraw-amount').value);
+            const withdrawType = document.getElementById('withdraw-type').value;
+            
+            if (!amount || amount < 50) {
+                alert('Minimum withdrawal amount is KSh 50');
+                return;
+            }
+            
+            if (amount > 150000) {
+                alert('Maximum withdrawal amount is KSh 150,000');
+                return;
+            }
+            
+            let fee = getFee(amount, withdrawFees);
+            
+            // ATM withdrawals have different fee structure
+            if (withdrawType === 'atm') {
+                if (amount <= 1000) fee = 15;
+                else if (amount <= 2500) fee = 25;
+                else if (amount <= 5000) fee = 35;
+                else if (amount <= 10000) fee = 55;
+                else fee = 110;
+            }
+            
+            const netAmount = amount - fee;
+            
+            // Display results
+            document.getElementById('withdraw-amount-display').textContent = `KSh ${amount.toLocaleString()}`;
+            document.getElementById('withdraw-fee-display').textContent = `KSh ${fee.toLocaleString()}`;
+            document.getElementById('withdraw-net-display').textContent = `KSh ${netAmount.toLocaleString()}`;
+            
+            document.getElementById('withdraw-result').classList.add('show');
+        }
+
+        // Allow Enter key to trigger calculations
+        document.getElementById('send-amount').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') calculateSendFee();
+        });
+
+        document.getElementById('withdraw-amount').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') calculateWithdrawFee();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'971cf350e3d573c4',t:'MTc1NTY0MTEwNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
